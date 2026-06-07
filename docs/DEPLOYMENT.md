@@ -160,11 +160,11 @@ Compatibility project settings, for an existing Cloudflare Pages project that al
 ```text
 Project root: /
 Build command: npm run build
-Build output directory: apps/web/dist
+Build output directory: dist
 Environment variable: VITE_API_BASE_URL
 ```
 
-The repository root `build` script delegates to `npm run build:web`, so both settings produce the same Vite production output. Prefer the `apps/web` root for new Pages projects, and use the repository-root settings only when keeping an existing Pages project configuration.
+The repository root `build` script delegates to `npm run build:web` and mirrors `apps/web/dist` into root `dist`, so both settings produce the same Vite production output. Prefer the `apps/web` root for new Pages projects, and use the repository-root settings only when keeping an existing Pages project configuration.
 
 `public/_headers` and `public/_redirects` are included for SPA routing and PWA cache behavior. The app registers the PWA service worker at startup; when a new frontend bundle is available, users see an in-app update prompt and can refresh into the latest version without reinstalling the Android shell.
 
@@ -181,7 +181,7 @@ Set `VITE_API_BASE_URL` in Vercel project environment variables.
 
 Run `npm run smoke:static-config` after changing `_headers` or `vercel.json`. It verifies HTML, service worker, and manifest routes stay revalidating while hashed assets under `/assets/` remain immutable.
 
-Run `npm run smoke:cloudflare-pages-config` after changing root/workspace package scripts, Cloudflare Pages project settings, or deployment docs. It verifies both supported Pages configurations remain valid: `apps/web` as the project root with `dist` output, and repository root builds with `apps/web/dist` output.
+Run `npm run smoke:cloudflare-pages-config` after changing root/workspace package scripts, Cloudflare Pages project settings, or deployment docs. It verifies both supported Pages configurations remain valid: `apps/web` as the project root with `dist` output, and repository root builds with root `dist` output.
 
 Run `npm run smoke:pwa-config` after changing `vite.config.ts`, `index.html`, PWA icons, or SPA fallback files. It verifies prompt-based updates, standalone manifest settings, maskable icons, service worker precache/navigation fallback, and vendor chunk split configuration.
 
