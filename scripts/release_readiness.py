@@ -19,6 +19,7 @@ DEPLOY_REPORT = ROOT / "artifacts" / "deploy-smoke.json"
 ANDROID_REPORT = ROOT / "artifacts" / "android-smoke.json"
 ANDROID_REMOTE_REPORT = ROOT / "artifacts" / "android-remote-assets-smoke.json"
 LOCAL_VERIFY_REPORT = ROOT / "artifacts" / "local-verify.json"
+OFFICIAL_URLS_REPORT = ROOT / "artifacts" / "official-urls.json"
 TRUTHY = {"1", "true", "yes", "on"}
 
 
@@ -199,23 +200,39 @@ def check_bundled_mode() -> Check:
     if not CAP_CONFIG.exists():
         return Check(
             key="capacitor_mode",
-            label="Capacitor bundled mode",
+            label="Capacitor release mode",
             status="missing",
             detail="capacitor.config.json has not been generated.",
             command="npm run cap:sync",
         )
-    text = CAP_CONFIG.read_text(encoding="utf-8")
-    if '"url"' in text:
+    server_url = current_cap_server_url()
+    if server_url:
+        official_report = load_json_report(OFFICIAL_URLS_REPORT)
+        official_frontend_url = str((official_report or {}).get("frontend_url") or "")
+        official_cap_url = str((official_report or {}).get("cap_server_url") or "")
+        if (
+            is_valid_official_urls_report(official_report)
+            and server_url == official_frontend_url
+            and server_url == official_cap_url
+        ):
+            return Check(
+                key="capacitor_mode",
+                label="Capacitor release mode",
+                status="ok",
+                detail=f"Android assets pin the official remote frontend URL from {relative(OFFICIAL_URLS_REPORT)}.",
+                command="npm run smoke:official-urls",
+                report_path="artifacts/official-urls.json",
+            )
         return Check(
             key="capacitor_mode",
-            label="Capacitor bundled mode",
+            label="Capacitor release mode",
             status="warn",
-            detail="Android assets currently contain a remote server.url. This is fine for remote-mode testing, but bundled release checks expect it cleared.",
-            command="Remove-Item Env:\\CAP_SERVER_URL -ErrorAction SilentlyContinue; npm run cap:sync",
+            detail="Android assets contain a remote server.url, but no matching successful official URL handoff report was found.",
+            command="$env:SMOKE_FRONTEND_URL='https://your-frontend.example'; $env:SMOKE_BACKEND_URL='https://your-backend.example'; npm run release:official-urls",
         )
     return Check(
         key="capacitor_mode",
-        label="Capacitor bundled mode",
+        label="Capacitor release mode",
         status="ok",
         detail="Android assets do not pin a remote server.url.",
         command="npm run smoke:apk",
@@ -481,8 +498,54 @@ def load_json_report(path: Path) -> dict | None:
     return data if isinstance(data, dict) else None
 
 
+def current_cap_server_url() -> str:
+    try:
+        data = json.loads(CAP_CONFIG.read_text(encoding="utf-8-sig"))
+    except (json.JSONDecodeError, OSError):
+        return ""
+    if not isinstance(data, dict):
+        return ""
+    server = data.get("server")
+    if not isinstance(server, dict):
+        return ""
+    return str(server.get("url") or "")
+
+
 def is_valid_status_report(report: dict | None) -> bool:
     return bool(report and report.get("status") == "ok")
+
+
+def is_valid_official_urls_report(report: dict | None) -> bool:
+    if not is_valid_status_report(report):
+        return False
+    frontend_url = str(report.get("frontend_url") or "")
+    backend_url = str(report.get("backend_url") or "")
+    cap_server_url = str(report.get("cap_server_url") or "")
+    vite_api_base_url = str(report.get("vite_api_base_url") or "")
+    if not frontend_url.startswith("https://") or not backend_url.startswith("https://"):
+        return False
+    if cap_server_url != frontend_url or vite_api_base_url != backend_url:
+        return False
+    if report.get("restored_bundled") is not False:
+        return False
+    steps = report.get("steps")
+    if not isinstance(steps, list):
+        return False
+    required_steps = {
+        "Build frontend with official backend URL",
+        "Verify frontend bundle API base",
+        "Verify deployed frontend/backend",
+        "Sync Capacitor shell to official frontend URL",
+        "Build and verify official remote Android APK",
+    }
+    completed_steps = {
+        str(step.get("name"))
+        for step in steps
+        if isinstance(step, dict) and step.get("status") == "ok"
+    }
+    if not required_steps.issubset(completed_steps):
+        return False
+    return is_valid_apk_summary(report.get("apk"))
 
 
 def is_valid_deepseek_report(report: dict | None) -> bool:
