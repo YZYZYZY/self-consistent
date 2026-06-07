@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: micro-action-coach-api
+    runtime: docker
+    rootDir: services/api
+    plan: starter
+    healthCheckPath: /health
+    disk:
+      name: micro-action-coach-data
+      mountPath: /data
+      sizeGB: 5
+    envVars:
+      - key: AI_PROVIDER
+        value: deepseek
+      - key: AI_MODEL
+        value: deepseek-v4-flash
+      - key: CORS_ORIGINS
+        sync: false
+      - key: DEEPSEEK_API_KEY
+        sync: false
+      - key: SERVER_RECORD_ENABLED
+        value: "true"
+      - key: ADMIN_TOKEN
+        sync: false
+      - key: DATABASE_URL
+        value: sqlite:////data/micro_action_coach.db

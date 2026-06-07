@@ -1,0 +1,40 @@
+{
+  "name": "micro-action-coach",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/web"
+  ],
+  "scripts": {
+    "dev:api": ".\\.venv\\Scripts\\python -m uvicorn app.main:app --app-dir services/api --reload",
+    "dev:web": "npm --workspace apps/web run dev",
+    "build:web": "npm --workspace apps/web run build",
+    "lint:web": "npm --workspace apps/web run lint",
+    "test:web": "npm --workspace apps/web run test",
+    "test:api": ".\\.venv\\Scripts\\python -m pytest services/api/tests",
+    "generate:pwa-icons": ".\\.venv\\Scripts\\python scripts\\generate_pwa_icons.py",
+    "verify:local": "powershell -ExecutionPolicy Bypass -File scripts\\verify_local.ps1",
+    "release:readiness": ".\\.venv\\Scripts\\python scripts\\release_readiness.py",
+    "release:bundle": ".\\.venv\\Scripts\\python scripts\\release_bundle.py",
+    "release:collect-external": "powershell -ExecutionPolicy Bypass -File scripts\\collect_external_evidence.ps1",
+    "smoke:api": ".\\.venv\\Scripts\\python scripts\\smoke_api.py",
+    "smoke:backend-deploy-config": ".\\.venv\\Scripts\\python scripts\\smoke_backend_deploy_config.py",
+    "smoke:deepseek": ".\\.venv\\Scripts\\python scripts\\smoke_deepseek.py",
+    "smoke:deploy": ".\\.venv\\Scripts\\python scripts\\smoke_deploy.py",
+    "smoke:external-evidence": ".\\.venv\\Scripts\\python scripts\\smoke_external_evidence_collection.py",
+    "smoke:frontend-api-base": ".\\.venv\\Scripts\\python scripts\\smoke_frontend_api_base.py",
+    "smoke:local-deploy": ".\\.venv\\Scripts\\python scripts\\smoke_local_deploy.py",
+    "smoke:static-config": ".\\.venv\\Scripts\\python scripts\\smoke_static_config.py",
+    "smoke:pwa-config": ".\\.venv\\Scripts\\python scripts\\smoke_pwa_config.py",
+    "smoke:release-bundle": ".\\.venv\\Scripts\\python scripts\\smoke_release_bundle.py",
+    "smoke:text-encoding": ".\\.venv\\Scripts\\python scripts\\smoke_text_encoding.py",
+    "smoke:secrets": ".\\.venv\\Scripts\\python scripts\\smoke_secrets.py",
+    "smoke:apk": ".\\.venv\\Scripts\\python scripts\\smoke_apk_assets.py",
+    "smoke:android": "powershell -ExecutionPolicy Bypass -File scripts\\smoke_android.ps1",
+    "smoke:android:manifest": "powershell -ExecutionPolicy Bypass -File scripts\\smoke_android.ps1 -ManifestOnly",
+    "smoke:android:remote-assets": "powershell -ExecutionPolicy Bypass -File scripts\\smoke_capacitor_remote.ps1",
+    "cap:sync": "npm --workspace apps/web run cap:sync",
+    "cap:sync:android": "npm --workspace apps/web run cap:sync:android",
+    "cap:open:android": "npm --workspace apps/web run cap:open:android"
+  }
+}
