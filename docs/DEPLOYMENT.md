@@ -181,6 +181,8 @@ Set `VITE_API_BASE_URL` in Vercel project environment variables.
 
 Run `npm run smoke:static-config` after changing `_headers` or `vercel.json`. It verifies HTML, service worker, and manifest routes stay revalidating while hashed assets under `/assets/` remain immutable.
 
+Run `npm run smoke:cloudflare-pages-config` after changing root/workspace package scripts, Cloudflare Pages project settings, or deployment docs. It verifies both supported Pages configurations remain valid: `apps/web` as the project root with `dist` output, and repository root builds with `apps/web/dist` output.
+
 Run `npm run smoke:pwa-config` after changing `vite.config.ts`, `index.html`, PWA icons, or SPA fallback files. It verifies prompt-based updates, standalone manifest settings, maskable icons, service worker precache/navigation fallback, and vendor chunk split configuration.
 
 Run `npm run smoke:frontend-api-base` after building for a hosted frontend and before uploading `dist`. Set `EXPECTED_FRONTEND_API_BASE` or `SMOKE_BACKEND_URL` to the deployed FastAPI origin.

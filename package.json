@@ -20,6 +20,7 @@
     "release:collect-external": "powershell -ExecutionPolicy Bypass -File scripts\\collect_external_evidence.ps1",
     "smoke:api": ".\\.venv\\Scripts\\python scripts\\smoke_api.py",
     "smoke:backend-deploy-config": ".\\.venv\\Scripts\\python scripts\\smoke_backend_deploy_config.py",
+    "smoke:cloudflare-pages-config": ".\\.venv\\Scripts\\python scripts\\smoke_cloudflare_pages_config.py",
     "smoke:deepseek": ".\\.venv\\Scripts\\python scripts\\smoke_deepseek.py",
     "smoke:deploy": ".\\.venv\\Scripts\\python scripts\\smoke_deploy.py",
     "smoke:external-evidence": ".\\.venv\\Scripts\\python scripts\\smoke_external_evidence_collection.py",
