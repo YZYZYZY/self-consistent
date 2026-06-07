@@ -6,6 +6,7 @@
     "apps/web"
   ],
   "scripts": {
+    "build": "npm run build:web",
     "dev:api": ".\\.venv\\Scripts\\python -m uvicorn app.main:app --app-dir services/api --reload",
     "dev:web": "npm --workspace apps/web run dev",
     "build:web": "npm --workspace apps/web run build",

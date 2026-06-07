@@ -146,7 +146,7 @@ npm run smoke:frontend-api-base
 
 ### Cloudflare Pages
 
-Use:
+Recommended project settings:
 
 ```text
 Project root: apps/web
@@ -154,6 +154,17 @@ Build command: npm run build
 Build output directory: dist
 Environment variable: VITE_API_BASE_URL
 ```
+
+Compatibility project settings, for an existing Cloudflare Pages project that already builds from the repository root:
+
+```text
+Project root: /
+Build command: npm run build
+Build output directory: apps/web/dist
+Environment variable: VITE_API_BASE_URL
+```
+
+The repository root `build` script delegates to `npm run build:web`, so both settings produce the same Vite production output. Prefer the `apps/web` root for new Pages projects, and use the repository-root settings only when keeping an existing Pages project configuration.
 
 `public/_headers` and `public/_redirects` are included for SPA routing and PWA cache behavior. The app registers the PWA service worker at startup; when a new frontend bundle is available, users see an in-app update prompt and can refresh into the latest version without reinstalling the Android shell.
 
