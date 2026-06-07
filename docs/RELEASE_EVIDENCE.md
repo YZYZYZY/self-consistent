@@ -42,6 +42,9 @@ You can run the remaining external checks as one evidence collection pass after 
 ```powershell
 $env:SMOKE_FRONTEND_URL='https://your-frontend.example'
 $env:SMOKE_BACKEND_URL='https://your-api.example'
+$env:OFFICIAL_URLS_REPORT='artifacts/official-urls.json'
+npm run release:official-urls
+npm run smoke:official-urls
 $env:EXTERNAL_EVIDENCE_REPORT='artifacts/external-evidence-collection.json'
 npm run release:collect-external
 npm run smoke:external-evidence
@@ -51,7 +54,10 @@ Use plan mode first to see what will run and what is still missing:
 
 ```powershell
 npm run release:collect-external -- -PlanOnly
+npm run release:official-urls -- -PlanOnly -FrontendUrl 'https://your-frontend.example' -BackendUrl 'https://your-api.example'
 ```
+
+`release:official-urls` is the explicit handoff from temporary/local URLs to hosted release URLs. It builds `apps/web/dist` with `VITE_API_BASE_URL=$env:SMOKE_BACKEND_URL`, runs `smoke:frontend-api-base`, runs deployed frontend/backend smoke unless `-SkipDeploySmoke` is passed, syncs Capacitor with `CAP_SERVER_URL=$env:SMOKE_FRONTEND_URL`, builds the debug APK unless `-SkipAndroidBuild` is passed, verifies the APK in remote mode, and writes `artifacts/official-urls.json`. By default it leaves the generated Android project pinned to the official frontend URL; pass `-RestoreBundled` only when preparing a bundled-assets APK instead of the remote hosted frontend shell. `smoke:official-urls` validates that report structure, release URLs, Vite backend URL, Capacitor frontend URL, step statuses, and final APK metadata are self-consistent.
 
 The collector writes a machine-readable report and runs whichever checks have enough external prerequisites: frontend API base, deployed frontend/backend smoke, remote Android frontend smoke, physical Android phone smoke, and release readiness. It also writes `artifacts/release-readiness-external.json` and copies that summary into the collector report. It does not weaken readiness rules; missing URLs, a missing non-emulator physical phone, or any remaining readiness blocker keep the collection status `partial` rather than `ok`. Run `npm run smoke:external-evidence` after collection to verify the collector JSON status, required steps, and final readiness summary are self-consistent.
 

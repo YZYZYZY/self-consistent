@@ -189,6 +189,8 @@ Run `npm run smoke:frontend-api-base` after building for a hosted frontend and b
 
 After the frontend and backend are deployed, run `npm run smoke:deploy` with `SMOKE_FRONTEND_URL` and `SMOKE_BACKEND_URL` set. Unlike the local static-server smoke, this live deployment check also verifies the actual response cache headers for hosted HTML, the PWA manifest, `sw.js`, one referenced hashed JS/CSS asset, that the hosted frontend bundle contains the configured backend API base URL instead of a localhost fallback, and that the backend profile summary is readable and does not expose secrets. The full external evidence sequence is in `docs/RELEASE_EVIDENCE.md`.
 
+After the final Cloudflare Pages and Render URLs are known, `npm run release:official-urls` can perform the explicit production URL handoff in one pass. Set `SMOKE_FRONTEND_URL` and `SMOKE_BACKEND_URL`; the script builds the frontend with `VITE_API_BASE_URL` set to the Render backend, verifies the built bundle, runs deployed smoke, syncs Capacitor with `CAP_SERVER_URL` set to the Pages frontend, builds the debug APK, and verifies the APK in remote hosted frontend mode.
+
 To persist the deployed smoke evidence, set `SMOKE_DEPLOY_REPORT`:
 
 ```powershell
