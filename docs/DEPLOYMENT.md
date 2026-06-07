@@ -121,6 +121,14 @@ DATABASE_URL=sqlite:////data/micro_action_coach.db
 
 The frontend is a Vite PWA in `apps/web`.
 
+Production builds default to the deployed Render backend through `apps/web/.env.production`:
+
+```text
+VITE_API_BASE_URL=https://self-consistent.onrender.com
+```
+
+Cloudflare Pages may still override this with a `VITE_API_BASE_URL` environment variable when deploying to another backend.
+
 Set the API base URL before building:
 
 ```powershell
